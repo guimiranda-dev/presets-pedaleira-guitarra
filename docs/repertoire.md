@@ -33,7 +33,7 @@ Cada música contém `id`, `title`, `artist` e um array ordenado `parts`. IDs de
 
 Efeitos usam três estados explícitos: `on` (ligado), `off` (desligado) e `unspecified` (a definir). Ausência de informação não significa desligado. Ao selecionar um preset no formulário, são preenchidas as indicações já conhecidas de `od` e `ambience`; o usuário pode ajustar cada efeito independentemente para aquele trecho.
 
-Para delay e reverb, o formulário oferece `A definir`, `Desligado` e as configurações numeradas 1, 2 e 3. Escolher uma configuração liga aquele efeito no trecho e salva seu ID em `configurations.delay` ou `configurations.reverb`. As escolhas são independentes: por exemplo, Delay 2 e Reverb 3. Configurações sem valores continuam selecionáveis e aparecem como **Valores pendentes** no roteiro. Desligar o efeito preserva a referência escolhida, mas o roteiro exibe o estado desligado.
+Para delay e reverb, o formulário oferece `A definir`, `Desligado` e as configurações numeradas 1 e 2. Escolher uma configuração liga aquele efeito no trecho e salva seu ID em `configurations.delay` ou `configurations.reverb`. As escolhas são independentes: por exemplo, Delay 2 e Reverb 1. Configurações sem valores continuam selecionáveis e aparecem como **Valores pendentes** no roteiro. Desligar o efeito preserva a referência escolhida, mas o roteiro exibe o estado desligado.
 
 Ao mudar o preset do amplificador, as referências explícitas `delayConfigurationId` e `reverbConfigurationId` têm prioridade. Assim, escolher 2B preenche Delay 2 e Reverb 2. Quando o preset não tem referências explícitas, preserva-se a configuração já escolhida; se ele indicar ambiência e ainda não houver configuração, usa-se Delay 1 e Reverb 1. O usuário pode ajustar as escolhas depois.
 
@@ -46,3 +46,5 @@ As edições são salvas em `localStorage`, sob a chave versionada de `repertoir
 Depois do primeiro salvamento, a lista local substitui as referências iniciais naquele navegador. Alterar `initialSongs` no código não mescla automaticamente novas músicas com a lista local. A leitura aceita músicas antigas sem o campo `configurations` e as adapta em memória: delay/reverb previamente ligados recebem a configuração 1; os demais estados ficam sem configuração. IDs, músicas, trechos, estados e anotações são preservados. A chave de armazenamento v1 foi mantida e a migração só é gravada no próximo salvamento explícito. Se o contrato mudar novamente, preserve essa compatibilidade ou implemente uma migração adicional.
 
 Se a gravação falhar, o formulário permanece aberto com os dados digitados. Se o conteúdo salvo estiver inválido, a página avisa e mostra as referências iniciais sem gravar por conta própria.
+
+Referências antigas a Delay 3 e Reverb 3 são reconhecidas apenas para migração: a configuração é limpa e, se estava ligada, o efeito volta a **A definir**, sem substituir por outro timbre. Os demais dados da música são preservados.

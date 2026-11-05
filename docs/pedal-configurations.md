@@ -95,15 +95,15 @@ Preserve a grafia `Blom` fornecida pelo usuário e os nomes `Param1`, `Param2` e
 
 1. Identifique se o pedido é para substituir o ajuste atual, adicionar uma configuração alternativa do mesmo pedal ou cadastrar outro preset de amplificador.
 2. Para substituir o ajuste atual, altere o array de controles correspondente em `config/tonebook.ts`, mantendo os demais pedais.
-3. Existem três configurações por pedal em `delayConfigurations` e `reverbConfigurations`, com IDs estáveis (`delay-1` a `delay-3` e `reverb-1` a `reverb-3`). Preserve as configurações existentes, inclusive Duck em Delay 1 e Blom em Reverb 1.
-4. A configuração 1 usa os ajustes originais de `delayControls` e `reverbControls`. A configuração 2 (B) está preenchida: Analog no delay e Hall no reverb. Somente a configuração 3 tem `controls: null` e aparece como pendente no pedalboard e no repertório. No pedalboard os knobs pendentes exibem `—`, sem posição física. Para preencher uma configuração, substitua apenas seu `controls: null` pelo array completo de controles fornecidos; preserve seu ID para manter as escolhas das músicas. Nunca copie a configuração 1 como se fossem os valores reais de outra configuração.
+3. Existem duas configurações por pedal em `delayConfigurations` e `reverbConfigurations`, com IDs estáveis (`delay-1`, `delay-2`, `reverb-1`, `reverb-2`). Preserve as configurações existentes, inclusive Duck em Delay 1 e Blom em Reverb 1.
+4. A configuração 1 usa os ajustes originais de `delayControls` e `reverbControls`. A configuração 2 (B) está preenchida: Analog no delay e Hall no reverb. As configurações 3 foram removidas por decisão do usuário. No pedalboard os knobs pendentes exibem `—`, sem posição física. Para preencher uma configuração, substitua apenas seu `controls: null` pelo array completo de controles fornecidos; preserve seu ID para manter as escolhas das músicas. Nunca copie a configuração 1 como se fossem os valores reais de outra configuração.
 5. Registre os valores informados para o novo modo. Não herde silenciosamente ajustes de outro modo nem invente controles ou posições ausentes; se faltarem dados necessários, peça os valores ao usuário.
 6. Mantenha o estado de ativação separado dos ajustes. Hoje `od` controla a indicação de overdrive e `ambience` indica delay e reverb ligados; cadastrar um modo não muda esses estados automaticamente.
 7. Atualize a documentação afetada e execute `pnpm lint` e `pnpm build` após alterações de código.
 
 ## Configurações de pedais por preset
 
-Um preset pode informar `delayConfigurationId` e `reverbConfigurationId`. Referências por letras usam A = configuração 1, B = configuração 2 e C = configuração 3. O preset `2B — Clean lead` usa `delay-2` e `reverb-2`, com ambos ligados via `ambience: true`. Os valores da configuração B estão cadastrados nas tabelas deste guia. Não confunda a letra da posição do preset na Tank-G com a configuração dos pedais; registre as referências explicitamente.
+Um preset pode informar `delayConfigurationId` e `reverbConfigurationId`. Referências por letras usam A = configuração 1, B = configuração 2. O preset `2B — Clean lead` usa `delay-2` e `reverb-2`, com ambos ligados via `ambience: true`. Os valores da configuração B estão cadastrados nas tabelas deste guia. Não confunda a letra da posição do preset na Tank-G com a configuração dos pedais; registre as referências explicitamente.
 
 Ao trocar o preset selecionado, o pedalboard reinicia nos ajustes associados a ele. Seletores manuais permitem consultar outras configurações sem editar o preset. No repertório, escolher um preset com configurações explícitas preenche essas referências; o usuário pode alterá-las depois.
 
@@ -127,3 +127,5 @@ A representação da Tank-G é parcial: mostra somente os cinco ajustes cadastra
 - [M-Vave Tank-G — fotos do produto](https://www.rckaudio.com.br/guitarra/pedais-e-efeitos/pedaleira-m-vave-tank-g-multiefeito-para-guitarra).
 
 As fotos orientam cores, ordem e aparência dos controles; os valores dos ajustes continuam sendo os fornecidos pelo usuário.
+
+Na cadeia de sinal, a ordem de consulta é Captador → Amplificador → Impulse Response → Overdrive → Delay → Reverb. Overdrive mostra Ligado/Desligado; delay e reverb mostram Desligado ou o nome da configuração 1/2. Sem `ambience` ou referência explícita, esses efeitos aparecem como Desligado. Com `ambience: true` e sem referência explícita, usam a configuração 1.

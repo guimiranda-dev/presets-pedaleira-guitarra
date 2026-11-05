@@ -4,8 +4,8 @@ export interface PedalControl {
   readonly rotation?: number;
 }
 
-export type DelayConfigurationId = "delay-1" | "delay-2" | "delay-3";
-export type ReverbConfigurationId = "reverb-1" | "reverb-2" | "reverb-3";
+export type DelayConfigurationId = "delay-1" | "delay-2";
+export type ReverbConfigurationId = "reverb-1" | "reverb-2";
 
 export interface PedalConfiguration<Id extends string = string> {
   readonly id: Id;

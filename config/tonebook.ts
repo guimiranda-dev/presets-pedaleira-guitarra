@@ -66,7 +66,6 @@ export const delayConfigurations = [
 			{ label: "Mod", value: "9h", rotation: -90 },
 		],
 	},
-	{ id: "delay-3", label: "Delay 3", controls: null },
 ] as const satisfies readonly PedalConfiguration<DelayConfigurationId>[];
 
 export const reverbConfigurations = [
@@ -83,7 +82,6 @@ export const reverbConfigurations = [
 			{ label: "Param3", value: "12h", rotation: 0 },
 		],
 	},
-	{ id: "reverb-3", label: "Reverb 3", controls: null },
 ] as const satisfies readonly PedalConfiguration<ReverbConfigurationId>[];
 
 export const presets: readonly Preset[] = [

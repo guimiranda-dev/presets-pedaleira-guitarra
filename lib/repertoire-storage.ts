@@ -46,8 +46,8 @@ export function readRepertoire(raw: string | null): Song[] | null {
         if (value.configurations !== undefined) {
           if (!value.configurations || typeof value.configurations !== "object") return false;
           const configurations = value.configurations as Record<string, unknown>;
-          if (configurations.delay !== "" && !delayConfigurations.some(({ id }) => id === configurations.delay)) return false;
-          if (configurations.reverb !== "" && !reverbConfigurations.some(({ id }) => id === configurations.reverb)) return false;
+          if (configurations.delay !== "" && configurations.delay !== "delay-3" && !delayConfigurations.some(({ id }) => id === configurations.delay)) return false;
+          if (configurations.reverb !== "" && configurations.reverb !== "reverb-3" && !reverbConfigurations.some(({ id }) => id === configurations.reverb)) return false;
         }
         return repertoireConfig.effects.every(({ id }) =>
           repertoireConfig.states.some(({ value: state }) => state === effects[id]),
@@ -58,13 +58,25 @@ export function readRepertoire(raw: string | null): Song[] | null {
     // Migração aditiva: músicas antigas mantêm trechos, estados e anotações.
     return (data as Song[]).map((song) => ({
       ...song,
-      parts: song.parts.map((part) => ({
-        ...part,
-        configurations: part.configurations ?? {
-          delay: part.effects.delay === "on" ? "delay-1" : "",
-          reverb: part.effects.reverb === "on" ? "reverb-1" : "",
-        },
-      })),
+      parts: song.parts.map((part) => {
+        // As referências 3 antigas são reconhecidas apenas para migração.
+        const previous = part.configurations as { delay: string; reverb: string } | undefined;
+        return {
+          ...part,
+          effects: {
+            ...part.effects,
+            delay: previous?.delay === "delay-3" && part.effects.delay === "on" ? "unspecified" : part.effects.delay,
+            reverb: previous?.reverb === "reverb-3" && part.effects.reverb === "on" ? "unspecified" : part.effects.reverb,
+          },
+          configurations: previous ? {
+            delay: delayConfigurations.find(({ id }) => id === previous.delay)?.id ?? "",
+            reverb: reverbConfigurations.find(({ id }) => id === previous.reverb)?.id ?? "",
+          } : {
+            delay: part.effects.delay === "on" ? "delay-1" : "",
+            reverb: part.effects.reverb === "on" ? "reverb-1" : "",
+          },
+        };
+      }),
     }));
   } catch {
     return null;

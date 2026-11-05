@@ -9,9 +9,11 @@ export function PresetDetail({ preset }: { preset: Preset }) {
   const reverb = reverbConfigurations.find(({ id }) => id === (preset.reverbConfigurationId ?? "reverb-1"));
   const chain = [
     { label: "CAPTADOR", value: preset.pickup },
-    { label: "OVERDRIVE", value: preset.od ? "Ligado" : "Não especificado" },
     { label: "AMPLIFICADOR", value: preset.amp },
     { label: "IMPULSE RESPONSE", value: preset.ir },
+    { label: "OVERDRIVE", value: preset.od ? "Ligado" : "Desligado" },
+    { label: "DELAY", value: preset.ambience || preset.delayConfigurationId ? delay?.label ?? "Desligado" : "Desligado" },
+    { label: "REVERB", value: preset.ambience || preset.reverbConfigurationId ? reverb?.label ?? "Desligado" : "Desligado" },
   ];
 
   return (
