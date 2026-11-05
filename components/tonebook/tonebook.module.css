@@ -82,6 +82,20 @@
 	margin: 32px 0 24px;
 	flex-wrap: wrap;
 }
+.section-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 26px;
+	border-bottom: 1px solid var(--line);
+	padding: 0 0 18px;
+}
+.section-nav a {
+	font: 11px ui-monospace, monospace;
+	color: #61734f;
+	text-decoration: none;
+}
+.section-nav a:hover { color: var(--ink); text-decoration: underline; }
+.section-nav a:focus-visible { outline: 2px solid #719044; outline-offset: 4px; }
 .tab {
 	border: 1px solid var(--line);
 	background: transparent;
@@ -290,6 +304,9 @@
 	transform-origin: 50% 20.5px;
 	transform: rotate(var(--rot));
 }
+.knob-selector:after {
+	display: none;
+}
 .knobwrap small {
 	display: block;
 	font:
@@ -321,109 +338,6 @@
 	letter-spacing: -0.6px;
 	margin: 0 0 5px;
 	font-weight: 600;
-}
-.pedalgrid {
-	display: grid;
-	grid-template-columns: 1.15fr 1fr 1fr;
-	gap: 16px;
-}
-.pedal {
-	border-radius: 12px;
-	padding: 22px 20px;
-	background: #d9e4c8;
-	border: 1px solid #bdccaa;
-	position: relative;
-	box-shadow: 0 5px 0 #bcc8ad;
-}
-.pedal.blue {
-	background: #e2e7e9;
-	border-color: #cbd5d9;
-	box-shadow: 0 5px 0 #cbd2d5;
-}
-.pedal.tan {
-	background: #ece1ce;
-	border-color: #d6c8af;
-	box-shadow: 0 5px 0 #d7c9b4;
-}
-.pedal-top {
-	font:
-		10px ui-monospace,
-		monospace;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-.led {
-	height: 7px;
-	width: 7px;
-	border-radius: 50%;
-	background: #a0b482;
-	box-shadow: 0 0 0 3px #ffffff40;
-}
-.led.on {
-	background: #6b8c36;
-	box-shadow: 0 0 8px #729d37;
-}
-.pedalknobs {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 6px;
-	margin: 24px 0;
-}
-.pedalknobs .knob {
-	width: 40px;
-	height: 40px;
-	border-width: 2px;
-}
-.pedalknobs .knob:after {
-	height: 12px;
-	transform-origin: 50% 15px;
-}
-.pedalknobs small {
-	font-size: 8px;
-}
-.pedalknobs b {
-	font-size: 11px;
-}
-.pedal h4 {
-	font-size: 23px;
-	letter-spacing: -0.7px;
-	margin: 18px 0 0;
-	font-weight: 650;
-}
-.pedal .caption {
-	font:
-		9px ui-monospace,
-		monospace;
-	letter-spacing: 1.2px;
-	opacity: 0.6;
-}
-.switch {
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
-	border: 5px solid #d2d4cd;
-	background: linear-gradient(120deg, #f7f8f4, #a3aaa2);
-	box-shadow: 0 2px 3px #0003;
-	margin: 19px auto 0;
-}
-.pending {
-	height: 88px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 15px;
-}
-.pending i {
-	width: 32px;
-	height: 32px;
-	border-radius: 50%;
-	border: 2px dashed #a3aaa280;
-}
-.pending-note {
-	font-size: 11px;
-	color: #6b7268;
-	margin-top: 13px;
 }
 .statusrow {
 	font:
@@ -459,17 +373,6 @@
 @media (max-width: 900px) {
 	.layout {
 		grid-template-columns: 230px minmax(0, 1fr);
-	}
-	.pedalgrid {
-		grid-template-columns: 1fr;
-	}
-	.pedal {
-		max-width: none;
-	}
-	.pedalknobs {
-		max-width: 320px;
-		margin-left: auto;
-		margin-right: auto;
 	}
 	.detail {
 		padding: 22px;

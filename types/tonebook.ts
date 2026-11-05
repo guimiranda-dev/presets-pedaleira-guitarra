@@ -1,3 +1,19 @@
+export interface PedalControl {
+  readonly label: string;
+  readonly value: string | number;
+  readonly rotation?: number;
+}
+
+export type DelayConfigurationId = "delay-1" | "delay-2" | "delay-3";
+export type ReverbConfigurationId = "reverb-1" | "reverb-2" | "reverb-3";
+
+export interface PedalConfiguration<Id extends string = string> {
+  readonly id: Id;
+  readonly label: string;
+  /** null indica que os valores ainda serão fornecidos pelo usuário. */
+  readonly controls: readonly PedalControl[] | null;
+}
+
 export interface Preset {
   readonly id: string;
   readonly name: string;

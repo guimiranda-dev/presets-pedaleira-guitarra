@@ -1,7 +1,6 @@
 import { Fragment } from "react";
-import { amplifierConfig } from "@/config/tonebook";
 import type { Preset } from "@/types/tonebook";
-import { Knob } from "./knob";
+import { TankG } from "./tank-g";
 import styles from "./tonebook.module.css";
 
 export function PresetDetail({ preset }: { preset: Preset }) {
@@ -35,13 +34,9 @@ export function PresetDetail({ preset }: { preset: Preset }) {
           </Fragment>
         ))}
       </div>
-      <div className={styles.sectionlabel}>02 — AJUSTES DO AMPLIFICADOR · ESCALA {amplifierConfig.min}–{amplifierConfig.max}</div>
-      <div className={styles.controls}>
-        {amplifierConfig.labels.map((label, index) => (
-          <Knob key={label} label={label} value={preset.values[index]} rotation={amplifierConfig.startAngle + ((preset.values[index] - amplifierConfig.min) / (amplifierConfig.max - amplifierConfig.min)) * amplifierConfig.sweepAngle} />
-        ))}
-      </div>
-      {preset.ambience && <p className={styles["ambience-note"]}>● Reverb e delay ligados · Ajustes dos pedais pendentes.</p>}
+      <div className={styles.sectionlabel}>02 — AJUSTES DO AMPLIFICADOR · M-VAVE TANK-G</div>
+      <TankG preset={preset} />
+      {preset.ambience && <p className={styles["ambience-note"]}>● Reverb e delay ligados · Consulte os ajustes no pedalboard.</p>}
     </>
   );
 }

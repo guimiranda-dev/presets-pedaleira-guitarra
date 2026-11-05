@@ -1,4 +1,4 @@
-import type { Preset } from "@/types/tonebook";
+import type { DelayConfigurationId, PedalConfiguration, Preset, ReverbConfigurationId } from "@/types/tonebook";
 
 export const siteConfig = {
 	name: "tonebook",
@@ -11,11 +11,20 @@ export const siteConfig = {
 } as const;
 
 export const amplifierConfig = {
+	brand: "M-VAVE",
+	model: "TANK-G",
 	labels: ["Gain", "Treble", "Middle", "Bass", "Volume"],
+	panelOrder: [4, 3, 2, 1, 0],
 	min: 0,
 	max: 100,
 	startAngle: -135,
 	sweepAngle: 270,
+} as const;
+
+export const pedalModels = {
+	overdrive: { brand: "Caline", model: "Pure Sky", effect: "Overdrive" },
+	delay: { brand: "M-VAVE", model: "Elemental", effect: "Delay" },
+	reverb: { brand: "M-VAVE", model: "Mini Universe", effect: "Reverb" },
 } as const;
 
 export const overdriveControls = [
@@ -24,6 +33,36 @@ export const overdriveControls = [
 	{ label: "Treble", value: "12h", rotation: 0 },
 	{ label: "Bass", value: "12h", rotation: 0 },
 ] as const;
+
+export const delayControls = [
+	{ label: "Time", value: "11h30", rotation: -15 },
+	{ label: "Type", value: "Duck" },
+	{ label: "Feedback", value: "10h", rotation: -60 },
+	{ label: "Mix", value: "12h", rotation: 0 },
+	{ label: "Param", value: "10h", rotation: -60 },
+	{ label: "Mod", value: "9h", rotation: -90 },
+] as const;
+
+export const reverbControls = [
+	{ label: "Decay", value: "1h", rotation: 30 },
+	{ label: "Type", value: "Blom" },
+	{ label: "Mix", value: "11h", rotation: -30 },
+	{ label: "Param1", value: "10h", rotation: -60 },
+	{ label: "Param2", value: "1h", rotation: 30 },
+	{ label: "Param3", value: "2h", rotation: 60 },
+] as const;
+
+export const delayConfigurations = [
+	{ id: "delay-1", label: "Delay 1", controls: delayControls },
+	{ id: "delay-2", label: "Delay 2", controls: null },
+	{ id: "delay-3", label: "Delay 3", controls: null },
+] as const satisfies readonly PedalConfiguration<DelayConfigurationId>[];
+
+export const reverbConfigurations = [
+	{ id: "reverb-1", label: "Reverb 1", controls: reverbControls },
+	{ id: "reverb-2", label: "Reverb 2", controls: null },
+	{ id: "reverb-3", label: "Reverb 3", controls: null },
+] as const satisfies readonly PedalConfiguration<ReverbConfigurationId>[];
 
 export const presets: readonly Preset[] = [
 	{

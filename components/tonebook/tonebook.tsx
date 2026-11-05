@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/tonebook";
 import type { Preset } from "@/types/tonebook";
 import { Pedalboard } from "./pedalboard";
 import { PresetDetail } from "./preset-detail";
+import { Repertoire } from "./repertoire";
 import styles from "./tonebook.module.css";
 
 function normalize(value: string) {
@@ -53,6 +54,11 @@ export function Tonebook({ presets }: { presets: readonly Preset[] }) {
             {String(presets.length).padStart(2, "0")} PRESETS · {String(banks.length).padStart(2, "0")} BANCOS
           </div>
         </div>
+        <nav className={styles["section-nav"]} aria-label="Seções da página">
+          <a href="#preset-library">01 / Presets</a>
+          <a href="#pedalboard">02 / Pedalboard</a>
+          <a href="#repertoire">03 / Repertório <span aria-hidden="true">↓</span></a>
+        </nav>
         <div className={styles.toolbar} role="group" aria-label="Filtrar presets">
           {filters.map((filter) => (
             <button
@@ -74,7 +80,7 @@ export function Tonebook({ presets }: { presets: readonly Preset[] }) {
             onChange={(event) => setQuery(event.target.value)}
           />
         </div>
-        <div className={styles.layout}>
+        <div className={styles.layout} id="preset-library" role="region" aria-label="Biblioteca de presets" tabIndex={-1}>
           <aside aria-label="Lista de presets">
             <div className={styles.list}>
               {visiblePresets.map((preset) => (
@@ -116,6 +122,14 @@ export function Tonebook({ presets }: { presets: readonly Preset[] }) {
           </section>
         </div>
         <Pedalboard preset={selected} />
+        <Repertoire presets={presets} onSelectPreset={(id) => {
+          setBank("all");
+          setQuery("");
+          setSelectedId(id);
+          const library = document.getElementById("preset-library");
+          library?.scrollIntoView({ block: "start" });
+          library?.focus({ preventScroll: true });
+        }} />
         <footer>
           <span>{siteConfig.name}. · Feito para tocar mais.</span>
           <span>O próximo timbre começa aqui.</span>
