@@ -8,8 +8,8 @@ import styles from "./tonebook.module.css";
 import gear from "./gear.module.css";
 
 export function Pedalboard({ preset }: { preset?: Preset }) {
-  const [delayId, setDelayId] = useState<string>(delayConfigurations[0].id);
-  const [reverbId, setReverbId] = useState<string>(reverbConfigurations[0].id);
+  const [delayId, setDelayId] = useState<string>(preset?.delayConfigurationId ?? delayConfigurations[0].id);
+  const [reverbId, setReverbId] = useState<string>(preset?.reverbConfigurationId ?? reverbConfigurations[0].id);
   const delay = delayConfigurations.find(({ id }) => id === delayId) ?? delayConfigurations[0];
   const reverb = reverbConfigurations.find(({ id }) => id === reverbId) ?? reverbConfigurations[0];
   const pedals = [

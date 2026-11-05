@@ -35,7 +35,7 @@ Efeitos usam três estados explícitos: `on` (ligado), `off` (desligado) e `unsp
 
 Para delay e reverb, o formulário oferece `A definir`, `Desligado` e as configurações numeradas 1, 2 e 3. Escolher uma configuração liga aquele efeito no trecho e salva seu ID em `configurations.delay` ou `configurations.reverb`. As escolhas são independentes: por exemplo, Delay 2 e Reverb 3. Configurações sem valores continuam selecionáveis e aparecem como **Valores pendentes** no roteiro. Desligar o efeito preserva a referência escolhida, mas o roteiro exibe o estado desligado.
 
-Ao mudar o preset do amplificador, uma configuração já escolhida é preservada. Se o preset indicar ambiência e ainda não houver configuração, usa-se Delay 1 e Reverb 1.
+Ao mudar o preset do amplificador, as referências explícitas `delayConfigurationId` e `reverbConfigurationId` têm prioridade. Assim, escolher 2B preenche Delay 2 e Reverb 2. Quando o preset não tem referências explícitas, preserva-se a configuração já escolhida; se ele indicar ambiência e ainda não houver configuração, usa-se Delay 1 e Reverb 1. O usuário pode ajustar as escolhas depois.
 
 Os estados por trecho não mudam os presets globais nem as posições dos knobs dos pedais. O botão de consulta do preset abre sua referência na biblioteca, limpando os filtros; ele não aplica automaticamente os estados específicos do trecho ao pedalboard. Consulte o roteiro para saber quais pedais ligar. Para novas configurações de knobs, siga também `docs/pedal-configurations.md`.
 

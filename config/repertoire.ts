@@ -31,8 +31,8 @@ export const initialSongs: Song[] = presets.flatMap((preset) => preset.song ? [{
       reverb: preset.ambience ? "on" : "unspecified",
     },
     configurations: {
-      delay: preset.ambience ? "delay-1" : "",
-      reverb: preset.ambience ? "reverb-1" : "",
+      delay: preset.delayConfigurationId ?? (preset.ambience ? "delay-1" : ""),
+      reverb: preset.reverbConfigurationId ?? (preset.ambience ? "reverb-1" : ""),
     },
     notes: "Referência da biblioteca de presets. Edite para detalhar as partes da sua versão.",
   }],

@@ -121,7 +121,7 @@ export function Tonebook({ presets }: { presets: readonly Preset[] }) {
             )}
           </section>
         </div>
-        <Pedalboard preset={selected} />
+        <Pedalboard key={selected?.id ?? "no-preset"} preset={selected} />
         <Repertoire presets={presets} onSelectPreset={(id) => {
           setBank("all");
           setQuery("");

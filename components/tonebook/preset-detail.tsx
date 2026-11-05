@@ -1,9 +1,12 @@
 import { Fragment } from "react";
+import { delayConfigurations, reverbConfigurations } from "@/config/tonebook";
 import type { Preset } from "@/types/tonebook";
 import { TankG } from "./tank-g";
 import styles from "./tonebook.module.css";
 
 export function PresetDetail({ preset }: { preset: Preset }) {
+  const delay = delayConfigurations.find(({ id }) => id === (preset.delayConfigurationId ?? "delay-1"));
+  const reverb = reverbConfigurations.find(({ id }) => id === (preset.reverbConfigurationId ?? "reverb-1"));
   const chain = [
     { label: "CAPTADOR", value: preset.pickup },
     { label: "OVERDRIVE", value: preset.od ? "Ligado" : "Não especificado" },
@@ -36,7 +39,9 @@ export function PresetDetail({ preset }: { preset: Preset }) {
       </div>
       <div className={styles.sectionlabel}>02 — AJUSTES DO AMPLIFICADOR · M-VAVE TANK-G</div>
       <TankG preset={preset} />
-      {preset.ambience && <p className={styles["ambience-note"]}>● Reverb e delay ligados · Consulte os ajustes no pedalboard.</p>}
+      {preset.ambience && <p className={styles["ambience-note"]}>
+        ● {delay?.label} e {reverb?.label} ligados · {delay?.controls === null || reverb?.controls === null ? "Valores dos pedais pendentes." : "Consulte os ajustes no pedalboard."}
+      </p>}
     </>
   );
 }

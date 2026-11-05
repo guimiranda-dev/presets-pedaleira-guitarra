@@ -62,8 +62,8 @@ export function SongEditor({ song, presets, onSave, onCancel }: SongEditorProps)
                     reverb: preset?.ambience ? "on" : "unspecified",
                   },
                   configurations: {
-                    delay: part.configurations.delay || (preset?.ambience ? "delay-1" : ""),
-                    reverb: part.configurations.reverb || (preset?.ambience ? "reverb-1" : ""),
+                    delay: preset?.delayConfigurationId ?? (part.configurations.delay || (preset?.ambience ? "delay-1" : "")),
+                    reverb: preset?.reverbConfigurationId ?? (part.configurations.reverb || (preset?.ambience ? "reverb-1" : "")),
                   },
                 });
               }}>

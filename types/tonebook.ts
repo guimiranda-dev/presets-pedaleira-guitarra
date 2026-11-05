@@ -28,4 +28,6 @@ export interface Preset {
   readonly type: string;
   readonly od: boolean;
   readonly ambience?: boolean;
+  readonly delayConfigurationId?: DelayConfigurationId;
+  readonly reverbConfigurationId?: ReverbConfigurationId;
 }

@@ -54,13 +54,35 @@ export const reverbControls = [
 
 export const delayConfigurations = [
 	{ id: "delay-1", label: "Delay 1", controls: delayControls },
-	{ id: "delay-2", label: "Delay 2", controls: null },
+	{
+		id: "delay-2",
+		label: "Delay 2",
+		controls: [
+			{ label: "Time", value: "11h30", rotation: -15 },
+			{ label: "Type", value: "Analog" },
+			{ label: "Feedback", value: "10h", rotation: -60 },
+			{ label: "Mix", value: "9h", rotation: -90 },
+			{ label: "Param", value: "12h", rotation: 0 },
+			{ label: "Mod", value: "9h", rotation: -90 },
+		],
+	},
 	{ id: "delay-3", label: "Delay 3", controls: null },
 ] as const satisfies readonly PedalConfiguration<DelayConfigurationId>[];
 
 export const reverbConfigurations = [
 	{ id: "reverb-1", label: "Reverb 1", controls: reverbControls },
-	{ id: "reverb-2", label: "Reverb 2", controls: null },
+	{
+		id: "reverb-2",
+		label: "Reverb 2",
+		controls: [
+			{ label: "Decay", value: "11h", rotation: -30 },
+			{ label: "Type", value: "Hall" },
+			{ label: "Mix", value: "10h", rotation: -60 },
+			{ label: "Param1", value: "10h", rotation: -60 },
+			{ label: "Param2", value: "1h", rotation: 30 },
+			{ label: "Param3", value: "12h", rotation: 0 },
+		],
+	},
 	{ id: "reverb-3", label: "Reverb 3", controls: null },
 ] as const satisfies readonly PedalConfiguration<ReverbConfigurationId>[];
 
@@ -128,5 +150,32 @@ export const presets: readonly Preset[] = [
 		type: "Ambiência",
 		od: false,
 		ambience: true,
+	},
+	{
+		id: "2B",
+		name: "Clean lead",
+		pickup: "Braço",
+		amp: "Dumb clean",
+		ir: "Fender Twin Nrml1",
+		values: [28, 58, 70, 38, 55],
+		desc: "Som limpo, com pouca ambiência para solos solenes.",
+		type: "Solo limpo",
+		od: false,
+		ambience: true,
+		delayConfigurationId: "delay-2",
+		reverbConfigurationId: "reverb-2",
+	},
+	{
+		id: "2C",
+		name: "Clean funk",
+		pickup: "Ponte",
+		amp: "Dumb clean",
+		ir: "Fender Twin Jensen",
+		values: [31, 70, 72, 41, 50],
+		desc: "Som limpo, com agudo forte, para tocar grooves ritmados.",
+		song: "treasury",
+		artist: "Bruno Mars",
+		type: "Funk",
+		od: false,
 	},
 ];

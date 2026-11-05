@@ -29,7 +29,7 @@ Os bancos e contadores são derivados dos presets. O identificador usa o número
 
 O delay M-Vave Elemental está configurado com Time em 11h30, Type em Duck, Feedback em 10h, Mix em 12h, Param em 10h e Mod em 9h. O reverb M-Vave Mini Universe usa Decay em 1h, Type em Blom, Mix em 11h, Param1 em 10h, Param2 em 1h e Param3 em 2h. Em ambos, Type exibe o modo escolhido sem atribuir uma posição em horas.
 
-Delay e reverb têm três configurações selecionáveis no pedalboard e em cada trecho do repertório. A configuração 1 mantém os ajustes acima; as configurações 2 e 3 aguardam os valores reais em `delayConfigurations` e `reverbConfigurations`, em `config/tonebook.ts`.
+Delay e reverb têm três configurações selecionáveis no pedalboard e em cada trecho do repertório. A configuração 1 mantém os ajustes acima; a configuração 2 (B) usa Analog no delay e Hall no reverb, com os valores cadastrados em `delayConfigurations` e `reverbConfigurations`, em `config/tonebook.ts`. Apenas a configuração 3 continua pendente.
 
 As regras para configurar controles e adicionar outros modos estão em [docs/pedal-configurations.md](docs/pedal-configurations.md).
 
