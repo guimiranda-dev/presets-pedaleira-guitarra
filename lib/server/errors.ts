@@ -22,8 +22,30 @@ export function logServiceError(service: string, error: unknown) {
     status: safeCode(value?.status ?? value?.response?.status),
     causeCode: safeCode(value?.cause?.code),
     reason: credentialFailure(error),
+    message: safeErrorMessage(error),
     smtpStatus: safeCode(value?.responseCode),
   });
+}
+
+function safeErrorMessage(error: unknown) {
+  const raw = error instanceof Error ? error.message : "Exceção sem mensagem";
+  // Mensagens relacionadas à autenticação podem conter payloads do provedor.
+  // Mantém apenas os códigos/razões nessas situações.
+  if (/password|secret|token|credential|private|authorization|assertion/i.test(raw)) {
+    return "Detalhes de autenticação omitidos";
+  }
+  let message = raw;
+  for (const [key, value] of Object.entries(process.env)) {
+    if (value && value.length >= 4 && /SECRET|PASSWORD|PRIVATE_KEY|TOKEN|CREDENTIAL|API_KEY/.test(key)) {
+      message = message.split(value).join("[redacted]");
+      message = message.split(value.replace(/\\n/g, "\n")).join("[redacted]");
+    }
+  }
+  return message
+    .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, "[redacted]")
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+/g, "[email]")
+    .replace(/[\r\n]+/g, " ")
+    .slice(0, 800);
 }
 
 function credentialFailure(error: unknown) {

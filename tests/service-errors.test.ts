@@ -1,7 +1,21 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { errorResponse } from "@/lib/server/errors";
 
+afterEach(() => vi.unstubAllEnvs());
+
 describe("diagnóstico seguro de serviços", () => {
+  it("expõe mensagem de serialização útil quando não há código de serviço", () => {
+    const logger = vi.spyOn(console, "error").mockImplementation(() => {});
+    errorResponse(new Error('Could not serialize object of type "Timestamp"'), "otp-request");
+    expect(JSON.stringify(logger.mock.calls)).toContain("Timestamp");
+  });
+  it("remove segredos configurados e e-mails das mensagens de diagnóstico", () => {
+    vi.stubEnv("SMTP_PASSWORD", "sensitive-value-123");
+    const logger = vi.spyOn(console, "error").mockImplementation(() => {});
+    errorResponse(new Error("Unexpected data sensitive-value-123 from owner@example.com"));
+    expect(JSON.stringify(logger.mock.calls)).not.toContain("sensitive-value-123");
+    expect(JSON.stringify(logger.mock.calls)).not.toContain("owner@example.com");
+  });
   it("identifica ADC ausentes sem registrar a mensagem original", async () => {
     const logger = vi.spyOn(console, "error").mockImplementation(() => {});
     const response = errorResponse(new Error("Could not load the default credentials. private-information"), "otp-request");
