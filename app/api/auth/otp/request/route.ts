@@ -10,5 +10,5 @@ export async function POST(request: Request) {
     if (!parsed.success) throw new HttpError(400, "Informe um e-mail válido.");
     await requestOtp(parsed.data.email);
     return json({ message: "Se este e-mail estiver autorizado, você receberá um código de acesso." }, 202);
-  } catch (error) { return errorResponse(error); }
+  } catch (error) { return errorResponse(error, "otp-request"); }
 }
