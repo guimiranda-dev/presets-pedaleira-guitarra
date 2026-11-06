@@ -101,3 +101,9 @@ Depois de preencher o ambiente, solicite um código com seu e-mail autorizado, v
 - **Gmail EAUTH / SMTP 535:** use uma senha de app gerada na conta indicada por `SMTP_USER`, com verificação em duas etapas ativada. Use `SMTP_HOST=smtp.gmail.com`, porta 587 com `SMTP_SECURE=false`, ou 465 com `SMTP_SECURE=true`. A senha de app é diferente da senha de login da conta. Reinicie o servidor depois de alterar `.env.local`.
 
 O cliente Firestore usa `auth: new GoogleAuth(...)`; credenciais explícitas são passadas a um cliente JWT, em vez da opção depreciada `credentials`. Os logs de falhas registram serviço, códigos e uma mensagem sanitizada. Mensagens que mencionam dados de autenticação são omitidas; segredos configurados e e-mails são removidos antes do registro. Nenhuma alteração de IAM ou senha é feita automaticamente pelo aplicativo.
+
+### Build de produção e inteiros do Protobuf
+
+Mantenha `@google-cloud/firestore`, `google-auth-library` e `nodemailer` em `serverExternalPackages` no `next.config.ts`. O serializador REST do Google reconhece objetos de inteiros Protobuf pela classe `Long`; empacotar/minificar o SDK pode alterar esse nome e causar `toProto3JSON: don't know how to convert value 0` ao gravar documentos. As dependências externas são carregadas nativamente pelo Node no servidor.
+
+A regressão foi reproduzida num build Next de produção com uma gravação contendo `attempts: 0`, usando um servidor HTTP Firestore simulado localmente. Após configurar os pacotes externos, a mesma gravação foi serializada e recebida com sucesso. Nenhum documento foi escrito na GCP e nenhum e-mail foi enviado nesse teste. Testar apenas leitura ou validar o documento antes do commit não exercita esse problema.
