@@ -2,15 +2,19 @@
 
 A área de repertório fica abaixo do pedalboard. Ela permite cadastrar e editar músicas, criar trechos com nomes livres (Intro, 1ª estrofe, Refrão, Ponte etc.), reordená-los e anotar os efeitos de cada entrada.
 
+A lista de músicas é exibida em ordem alfabética pelo título (pt-BR, sem distinção de maiúsculas ou acentos), inclusive após cadastro e edição. Títulos iguais são ordenados por artista e ID. A ordem dos trechos de cada música continua sendo a definida pelo usuário.
+
 ## Onde ficam os dados
 
 - `types/repertoire.ts`: contratos `Song`, `SongPart`, `EffectId` e `EffectState`.
 - `config/repertoire.ts`: músicas iniciais, sugestões de nomes dos trechos, opções dos efeitos e chave do armazenamento.
-- `lib/repertoire-storage.ts`: leitura, validação e salvamento no navegador.
+- `hooks/use-cloud-repertoire.ts`: leitura e salvamento pela API autenticada.
+- `lib/repertoire-schema.ts`: validação de documentos.
+- `lib/server/repertoire.ts`: persistência e transações no Firestore.
 - `components/tonebook/repertoire.tsx`: busca e consulta dos roteiros.
 - `components/tonebook/song-editor.tsx`: formulário de cadastro e edição.
 
-As músicas iniciais reaproveitam apenas as associações já cadastradas nos presets. O trecho genérico `Referência` indica que o arranjo por partes ainda precisa ser preenchido. Não invente efeitos ou estruturas de músicas como se tivessem sido fornecidos pelo usuário.
+O repertório começa vazio e é cadastrado pelo usuário após login por código enviado ao e-mail. Não adicione exemplos automaticamente nem importe localStorage. Os presets continuam no código; não invente efeitos ou estruturas de músicas como se tivessem sido fornecidos pelo usuário.
 
 ## Estrutura de um trecho
 
@@ -41,10 +45,10 @@ Os estados por trecho não mudam os presets globais nem as posições dos knobs 
 
 ## Salvamento
 
-As edições são salvas em `localStorage`, sob a chave versionada de `repertoireConfig.storageKey`, e sobrevivem à recarga. Abas do mesmo navegador são notificadas das alterações. Não há conta, backend ou sincronização entre dispositivos. Limpar os dados do navegador remove as edições.
+O repertório é salvo no Firestore pela API Next.js, com login por OTP de e-mail e acesso restrito aos e-mails autorizados no servidor. Cada música tem seu documento em `users/{uid}/songs/{songId}`, no banco nomeado `preset-pedals-guitar` do projeto `vernal-citadel-309420`. Não há importação, seed ou persistência local das músicas.
 
-Depois do primeiro salvamento, a lista local substitui as referências iniciais naquele navegador. Alterar `initialSongs` no código não mescla automaticamente novas músicas com a lista local. A leitura aceita músicas antigas sem o campo `configurations` e as adapta em memória: delay/reverb previamente ligados recebem a configuração 1; os demais estados ficam sem configuração. IDs, músicas, trechos, estados e anotações são preservados. A chave de armazenamento v1 foi mantida e a migração só é gravada no próximo salvamento explícito. Se o contrato mudar novamente, preserve essa compatibilidade ou implemente uma migração adicional.
+A API verifica identidade e permissões antes de acessar o banco. Use `revision` para editar documentos existentes; um conflito retorna 409 e preserva o formulário. Não remova essa proteção nem aceite um UID informado pelo cliente para escolher o caminho do documento.
 
-Se a gravação falhar, o formulário permanece aberto com os dados digitados. Se o conteúdo salvo estiver inválido, a página avisa e mostra as referências iniciais sem gravar por conta própria.
+O cadastro e edição confirmam sucesso somente depois da gravação no Firestore. Os valores dos knobs, modelos de pedais e presets da Tank-G continuam em `config/tonebook.ts`; o banco armazena apenas as referências escolhidas no roteiro.
 
-Referências antigas a Delay 3 e Reverb 3 são reconhecidas apenas para migração: a configuração é limpa e, se estava ligada, o efeito volta a **A definir**, sem substituir por outro timbre. Os demais dados da música são preservados.
+Consulte [firestore.md](firestore.md) para variáveis de ambiente, credenciais, regras e instruções de configuração do login OTP e do serviço SMTP.

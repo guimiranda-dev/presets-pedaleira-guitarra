@@ -18,4 +18,8 @@ Antes de alterar controles, ajustes ou adicionar modos ao pedalboard, leia [docs
 
 ## Repertório de músicas
 
-Antes de alterar músicas, trechos ou persistência do repertório, leia [docs/repertoire.md](docs/repertoire.md). Preserve os dados locais existentes e diferencie efeitos desligados de efeitos ainda não informados.
+Antes de alterar músicas, trechos ou persistência do repertório, leia [docs/repertoire.md](docs/repertoire.md). Preserve os dados existentes no Firestore e diferencie efeitos desligados de efeitos ainda não informados.
+
+## GCP, OTP e credenciais
+
+Leia [docs/firestore.md](docs/firestore.md) antes de alterar autenticação ou persistência. Use o cliente Firestore da GCP somente no servidor. O login é por e-mail e código OTP enviado por SMTP, com conta autorizada, limite de envios/tentativas e sessão em cookie HttpOnly. Derive o UID da sessão validada e confira Origin nas escritas. Preserve os hashes, a expiração e as transações para consumo único dos códigos. Não registre códigos, tokens ou credenciais. Não grave presets ou ajustes dos pedais no banco. Não importe dados locais nem crie músicas de exemplo. Preserve a verificação de revisão nas músicas.

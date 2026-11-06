@@ -19,9 +19,10 @@ interface SongEditorProps {
   presets: readonly Preset[];
   onSave: (song: Song) => void;
   onCancel: () => void;
+  saving?: boolean;
 }
 
-export function SongEditor({ song, presets, onSave, onCancel }: SongEditorProps) {
+export function SongEditor({ song, presets, onSave, onCancel, saving = false }: SongEditorProps) {
   const [draft, setDraft] = useState(song);
   const updatePart = (id: string, changes: Partial<SongPart>) => {
     setDraft((current) => ({
@@ -37,7 +38,8 @@ export function SongEditor({ song, presets, onSave, onCancel }: SongEditorProps)
   };
 
   return (
-    <form className={styles.editor} onSubmit={submit}>
+    <form className={styles.editor} onSubmit={submit} aria-busy={saving}>
+      <fieldset className={styles["form-fields"]} disabled={saving}>
       <h4>{song.title ? "Editar música" : "Nova música"}</h4>
       <div className={styles.fields}>
         <label>Música<input required autoFocus maxLength={150} pattern=".*\S.*" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} placeholder="Nome da música" /></label>
@@ -128,8 +130,9 @@ export function SongEditor({ song, presets, onSave, onCancel }: SongEditorProps)
       <button type="button" className={styles.secondary} onClick={() => setDraft({ ...draft, parts: [...draft.parts, createPart()] })}>+ Adicionar trecho</button>
       <div className={styles["form-actions"]}>
         <button type="button" className={styles.secondary} onClick={onCancel}>Cancelar</button>
-        <button className={styles.primary} type="submit">Salvar música</button>
+        <button className={styles.primary} type="submit">{saving ? "Salvando…" : "Salvar música"}</button>
       </div>
+      </fieldset>
     </form>
   );
 }

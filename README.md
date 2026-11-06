@@ -12,6 +12,7 @@ pnpm dev
 Acesse http://localhost:3000. Para validar e executar a versão de produção:
 
 ```bash
+pnpm test
 pnpm lint
 pnpm build
 pnpm start
@@ -39,7 +40,7 @@ O pedalboard representa o Caline Pure Sky, o M-Vave Elemental e o M-Vave Mini Un
 
 A seção abaixo do pedalboard permite cadastrar e editar músicas com trechos ordenados, presets da Tank-G, estados de overdrive/delay/reverb e anotações. Use **Nova música**, **Adicionar trecho** e **Salvar música**. A busca consulta música e artista.
 
-As edições são salvas neste navegador, sem sincronização entre dispositivos. As músicas iniciais vêm das referências dos presets; efeitos ainda não informados aparecem como **A definir**. Veja [docs/repertoire.md](docs/repertoire.md) para a estrutura e as regras de manutenção.
+O repertório começa vazio e é salvo no Firestore com login pessoal por código enviado ao e-mail. Efeitos ainda não informados aparecem como **A definir**. Veja [docs/repertoire.md](docs/repertoire.md) para a estrutura e as regras de manutenção.
 
 ## Estrutura
 
@@ -47,4 +48,10 @@ A rota e os metadados usam Server Components. A biblioteca interativa fica em `c
 
 A busca consulta nome, código, música e artista, ignorando maiúsculas e acentos. Filtros e busca mantêm o detalhe sincronizado com os resultados; uma busca sem resultados exibe um estado vazio. Os controles rotativos e os interruptores são representações visuais para consulta.
 
-Os presets e ajustes dos pedais são estáticos. O repertório tem persistência local no navegador, sem serviços externos. Não são necessárias variáveis de ambiente. O arquivo `index.html` foi preservado como referência.
+Os presets e ajustes dos pedais são estáticos. O repertório usa Firestore da GCP e autenticação por OTP de e-mail. O arquivo `index.html` foi preservado como referência.
+
+## Firestore
+
+Copie [.env.example](.env.example) para `.env.local` e preencha o serviço SMTP, as contas autorizadas, o segredo de autenticação e as credenciais GCP do servidor. O projeto e o banco já estão identificados como `vernal-citadel-309420` e `preset-pedals-guitar`.
+
+Leia [docs/firestore.md](docs/firestore.md) para configurar o envio de códigos por SMTP, ADC/service account e validar a conexão. Somente músicas e trechos são gravados em `users/{uid}/songs`; presets e ajustes de pedais continuam no código. Nenhum dado local é importado. Não é necessário projeto ou aplicação Firebase.

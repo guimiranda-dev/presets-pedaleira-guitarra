@@ -1,9 +1,12 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
-import { initialSongs, repertoireConfig } from "@/config/repertoire";
+import { useState } from "react";
+import type { AuthUser } from "@/types/auth";
+import { useEmailAuth } from "@/hooks/use-email-auth";
+import { EmailLogin } from "./email-login";
+import { useCloudRepertoire } from "@/hooks/use-cloud-repertoire";
+import { repertoireConfig } from "@/config/repertoire";
 import { delayConfigurations, reverbConfigurations } from "@/config/tonebook";
-import { getRepertoireSnapshot, getServerRepertoireSnapshot, readRepertoire, saveRepertoire, subscribeRepertoire } from "@/lib/repertoire-storage";
 import type { Preset } from "@/types/tonebook";
 import type { Song } from "@/types/repertoire";
 import { createPart, SongEditor } from "./song-editor";
@@ -13,14 +16,35 @@ function normalize(text: string) {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").trim();
 }
 
-export function Repertoire({ presets, onSelectPreset }: {
+interface RepertoireProps {
   presets: readonly Preset[];
   onSelectPreset: (id: string) => void;
+}
+
+export function Repertoire(props: RepertoireProps) {
+  const auth = useEmailAuth();
+  if (auth.user && !auth.loading) {
+    return <RepertoireContent key={auth.user.uid} {...props} user={auth.user} onLogout={auth.logout} authBusy={auth.busy} authError={auth.error} />;
+  }
+  return (
+    <section id="repertoire" className={styles.section} aria-labelledby="repertoire-title">
+      <div className={styles.heading}>
+        <div><span className={styles.eyebrow}>DO ENSAIO AO PALCO</span><h3 id="repertoire-title">Cada música, seu caminho.</h3><p>Seu repertório pessoal, disponível onde você for tocar.</p></div>
+      </div>
+      <EmailLogin auth={auth} />
+    </section>
+  );
+}
+
+function RepertoireContent({ presets, onSelectPreset, user, onLogout, authBusy, authError }: RepertoireProps & {
+  user: AuthUser;
+  onLogout: () => Promise<void>;
+  authBusy: boolean;
+  authError: string;
 }) {
-  const raw = useSyncExternalStore(subscribeRepertoire, getRepertoireSnapshot, getServerRepertoireSnapshot);
-  const stored = useMemo(() => readRepertoire(raw), [raw]);
-  const songs = stored ?? initialSongs;
-  const [selectedId, setSelectedId] = useState(initialSongs[0]?.id);
+  const { songs, loading, loadError, saveSong, reload } = useCloudRepertoire(user);
+  const [selectedId, setSelectedId] = useState<string>();
+  const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState<Song | null>(null);
   const [message, setMessage] = useState("");
@@ -28,19 +52,19 @@ export function Repertoire({ presets, onSelectPreset }: {
   const visible = songs.filter((song) => normalize(`${song.title} ${song.artist}`).includes(normalize(query)));
   const selected = visible.find(({ id }) => id === selectedId) ?? visible[0];
 
-  function save(song: Song) {
+  async function save(song: Song) {
+    if (saving) return;
+    setSaving(true);
+    setError("");
     try {
-      saveRepertoire(songs.some(({ id }) => id === song.id)
-        ? songs.map((current) => current.id === song.id ? song : current)
-        : [...songs, song]);
+      await saveSong(song);
       setSelectedId(song.id);
       setQuery("");
       setDraft(null);
-      setError("");
-      setMessage(`“${song.title}” salva neste navegador.`);
-    } catch {
-      setError("Não foi possível salvar neste navegador. Seu formulário foi mantido; confira se o armazenamento está permitido e tente novamente.");
-    }
+      setMessage(`“${song.title}” salva no seu repertório.`);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Não foi possível salvar. Seu formulário foi mantido; tente novamente.");
+    } finally { setSaving(false); }
   }
 
   return (
@@ -55,28 +79,34 @@ export function Repertoire({ presets, onSelectPreset }: {
           setError("");
           setMessage("");
           setDraft({ id: crypto.randomUUID(), title: "", artist: "", parts: [{ ...createPart(), name: "Intro" }] });
-        }} disabled={draft !== null}>+ Nova música</button>
+        }} disabled={draft !== null || loading || !!loadError}>+ Nova música</button>
       </div>
+      <div className={styles["account-bar"]}>
+        <span>{user.email}</span>
+        <span><button type="button" className={styles.secondary} onClick={reload} disabled={loading || saving || draft !== null}>Atualizar</button> <button type="button" className={styles.secondary} onClick={onLogout} disabled={authBusy || saving}>Sair</button></span>
+      </div>
+      {authError && <p role="alert" className={styles.warning}>{authError}</p>}
+      {loadError && <p role="alert" className={styles.warning}>{loadError}</p>}
+      {loading && <p role="status" className={styles.empty}>Carregando repertório…</p>}
       <div className={styles.workspace}>
         <aside className={styles.library} aria-label="Músicas do repertório">
           <div className={styles["library-top"]}><span>MEU REPERTÓRIO</span><b>{String(songs.length).padStart(2, "0")}</b></div>
           <input type="search" className={styles.search} aria-label="Buscar músicas" placeholder="Buscar música ou artista…" value={query} onChange={(event) => setQuery(event.target.value)} />
           <div className={styles["song-list"]}>
             {visible.map((song, index) => (
-              <button type="button" key={song.id} disabled={draft !== null} className={`${styles.song} ${selected?.id === song.id ? styles.selected : ""}`} aria-pressed={selected?.id === song.id} onClick={() => { setSelectedId(song.id); setMessage(""); }}>
+              <button type="button" key={song.id} disabled={draft !== null || saving} className={`${styles.song} ${selected?.id === song.id ? styles.selected : ""}`} aria-pressed={selected?.id === song.id} onClick={() => { setSelectedId(song.id); setMessage(""); }}>
                 <span className={styles.number}>{String(index + 1).padStart(2, "0")}</span>
                 <span><strong>{song.title}</strong><small>{song.artist || "Artista não informado"}</small></span>
                 <span className={styles["part-count"]}>{song.parts.length} {song.parts.length === 1 ? "parte" : "partes"}</span>
               </button>
             ))}
-            {!visible.length && <p className={styles.empty} role="status">{songs.length ? "Nenhuma música encontrada." : "Seu próximo som começa com uma nova música."}</p>}
+            {!loading && !loadError && !visible.length && <p className={styles.empty} role="status">{songs.length ? "Nenhuma música encontrada." : "Seu próximo som começa com uma nova música."}</p>}
           </div>
-          <p className={styles["storage-note"]}>Suas edições ficam salvas neste navegador.</p>
+          <p className={styles["storage-note"]}>Suas músicas ficam salvas na sua conta.</p>
         </aside>
         <div className={styles.detail}>
-          {raw !== null && stored === null && <p className={styles.warning}>O repertório salvo não pôde ser lido. As referências iniciais estão sendo exibidas.</p>}
           {error && <p className={styles.warning} role="alert">{error}</p>}
-          {draft ? <SongEditor key={draft.id} song={draft} presets={presets} onSave={save} onCancel={() => { setDraft(null); setError(""); }} /> : selected ? (
+          {draft ? <SongEditor key={draft.id} song={draft} presets={presets} onSave={save} saving={saving} onCancel={() => { setDraft(null); setError(""); }} /> : selected ? (
             <>
               <div className={styles["song-heading"]}>
                 <div><span className={styles.eyebrow}>ROTEIRO DE TIMBRES</span><h4>{selected.title}</h4><p>{selected.artist || "Artista não informado"}</p></div>
@@ -117,7 +147,7 @@ export function Repertoire({ presets, onSelectPreset }: {
               </ol>
               <div className={styles.legend}><span><i className={styles["on-dot"]} />Ligado</span><span><i className={styles["off-dot"]} />Desligado</span><span>Você decide o timbre de cada trecho.</span></div>
             </>
-          ) : <div className={styles.empty}>Adicione uma música ou ajuste a busca para consultar seu roteiro.</div>}
+          ) : <div className={styles.empty}>{loading ? "Buscando suas músicas…" : loadError ? "O repertório está indisponível. Tente atualizar." : "Adicione sua primeira música para montar o roteiro de timbres."}</div>}
         </div>
       </div>
       <p role="status" className={styles["save-message"]}>{message}</p>
